@@ -50,7 +50,6 @@ class AI:
     def __stream_ai_response_audio(
         self, stream: Iterator[ChatResponse]
     ) -> Iterator[AudioChunk]:
-        print("AI response: ", end="")
         sentence = ""
         total_output = ""
         break_points = [".", "!", "?", ",", "-"]
@@ -58,7 +57,6 @@ class AI:
             text = chunk["message"]["content"]
             sentence += text
             total_output += text
-            print(text, end="", flush=True)
             break_point = any(bp in text for bp in break_points)
             if break_point:
                 audio_chunks = self.__voice.synthesize(sentence)
@@ -74,8 +72,6 @@ class AI:
         message = ChatMessage("assistant", total_output)
         self.__chat_history.append(message)
         self.__chat_history_to_add.append(message)
-
-        print()
 
     def query_AI(self, audio_np: ndarray[float32]) -> Iterator[AudioChunk]:
         transcription = self.__transcribe(audio_np)
@@ -95,9 +91,6 @@ class AI:
             audio_chunks = self.__stream_ai_response_audio(response_stream)
             for chunk in audio_chunks:
                 yield chunk
-            print("\nHistory to add: ", self.__chat_history_to_add)
             self.__chat_history_repo.AddChatHistory(self.__chat_history_to_add)
             self.__chat_history_to_add.clear()
             self.__saving_chat_history = False
-
-        print("\nSaved history: ", self.__chat_history)
