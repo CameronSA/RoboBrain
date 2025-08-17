@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 import numpy as np
 import uvicorn
+import sounddevice
 
 from AI_Engine.ai import AI
 
@@ -13,7 +14,10 @@ async def speech_to_speech(request: Request):
     audio_bytes = await request.body()
     audio_np = np.frombuffer(audio_bytes, dtype=np.int16).astype(np.float32) / 32768.0
 
-    ai.query_AI(audio_np)
+    audio_chunks = ai.query_AI(audio_np)
+    for chunk in audio_chunks:
+        sounddevice.play(chunk.audio_int16_array, samplerate=22050)
+        sounddevice.wait()
 
 
 if __name__ == "__main__":

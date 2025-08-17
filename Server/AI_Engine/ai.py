@@ -7,8 +7,7 @@ from db.models import ChatMessage
 from collections.abc import Iterator
 from faster_whisper import WhisperModel
 from ollama import ChatResponse
-from piper import PiperVoice
-import sounddevice
+from piper import AudioChunk, PiperVoice
 
 
 class AI:
@@ -48,13 +47,9 @@ class AI:
 
         return stream
 
-    def __synthesize_sentence(self, sentence: str):
-        audio_chunks = self.__voice.synthesize(sentence)
-        for chunk in audio_chunks:
-            sounddevice.play(chunk.audio_int16_array, samplerate=22050)
-            sounddevice.wait()
-
-    def __play_ai_response_audio(self, stream: Iterator[ChatResponse]):
+    def __stream_ai_response_audio(
+        self, stream: Iterator[ChatResponse]
+    ) -> Iterator[AudioChunk]:
         print("AI response: ", end="")
         sentence = ""
         total_output = ""
@@ -66,8 +61,15 @@ class AI:
             print(text, end="", flush=True)
             break_point = any(bp in text for bp in break_points)
             if break_point:
-                self.__synthesize_sentence(sentence)
+                audio_chunks = self.__voice.synthesize(sentence)
+                for chunk in audio_chunks:
+                    yield chunk
                 sentence = ""
+
+        if sentence:
+            audio_chunks = self.__voice.synthesize(sentence)
+            for chunk in audio_chunks:
+                yield chunk
 
         message = ChatMessage("assistant", total_output)
         self.__chat_history.append(message)
@@ -75,19 +77,24 @@ class AI:
 
         print()
 
-    def query_AI(self, audio_np: ndarray[float32]):
+    def query_AI(self, audio_np: ndarray[float32]) -> Iterator[AudioChunk]:
         transcription = self.__transcribe(audio_np)
 
         if not transcription:
             return
 
         if self.__saving_chat_history:
-            self.__synthesize_sentence(
+            audio_chunks = self.__voice.synthesize(
                 "Give me a second, I'm just trying to remember what we've talked about"
             )
+
+            for chunk in audio_chunks:
+                yield chunk
         else:
             response_stream = self.__stream_ai_response(transcription)
-            self.__play_ai_response_audio(response_stream)
+            audio_chunks = self.__stream_ai_response_audio(response_stream)
+            for chunk in audio_chunks:
+                yield chunk
             print("\nHistory to add: ", self.__chat_history_to_add)
             self.__chat_history_repo.AddChatHistory(self.__chat_history_to_add)
             self.__chat_history_to_add.clear()
