@@ -6,6 +6,7 @@ A speech to speech system that leverages Whisper, Ollama and Piper to create a l
 
 - Run `pip install -r requirements.txt` in each of the server and client directories.
 - Ensure Ollama is running with the `phi3:mini` model installed
+- Ensure that you the `en_GB-northern_english_male-medium.onnx` voice downloaded. Obtainable here: https://rhasspy.github.io/piper-samples/#en_GB-northern_english_male-medium
 - Run `run_speech_to_speech_server.py`
 - Run `run_speech_to_speech_client.py`
 - Enjoy!
