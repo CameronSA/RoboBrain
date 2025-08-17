@@ -1,6 +1,6 @@
 # RoboBrain
 
-A speech to speech system that leverages Whisper, Ollama and Piper to create a local conversational AI. It consists of a server and a client, where the intention is that the client is installed on a lightweight device such as a Raspberry Pi, and the server runs elsewhere to act as the main brain. Audio bytes are streamed to the client from the server to be played back with a device that is accesible to the client. This is a hobby project and not intended for production use.
+A speech to speech system that leverages Whisper, Ollama and Piper to create a local conversational AI. It consists of a server and a client, where the intention is that the client is installed on a lightweight device such as a Raspberry Pi, and the server runs elsewhere to act as the main brain. The client takes a microphone input and sends it to the server. Audio bytes are then streamed back to the client from the server to be played back with a device that is accesible to the client. This is a hobby project and not intended for production use.
 
 # Usage
 
