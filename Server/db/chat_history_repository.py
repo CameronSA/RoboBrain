@@ -16,8 +16,8 @@ class ChatHistoryRepository:
         ]
 
         try:
-            with self.__session.begin():
-                self.__session.add_all(db_messages)
+            self.__session.add_all(db_messages)
+            self.__session.commit()
         except SQLAlchemyError as e:
             print(f"Failed to add chat history: {e}", e)
 

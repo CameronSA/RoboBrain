@@ -58,7 +58,7 @@ class AI:
         print("AI response: ", end="")
         sentence = ""
         total_output = ""
-        break_points = [".", "!", "?", ","]
+        break_points = [".", "!", "?", ",", "-"]
         for chunk in stream:
             text = chunk["message"]["content"]
             sentence += text
