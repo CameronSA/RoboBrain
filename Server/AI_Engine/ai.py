@@ -6,7 +6,6 @@ from db.chat_history_repository import ChatHistoryRepository
 from db.models import ChatMessage
 from collections.abc import Iterator
 from faster_whisper import WhisperModel
-from ollama import ChatResponse
 from piper import AudioChunk, PiperVoice
 
 
